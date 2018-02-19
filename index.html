@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>paper-toast-issues-80</title>
+
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+
+	<script src="components/webcomponentsjs/webcomponents-lite.js"></script>
+
+	<link rel="import" href="components/app-layout/app-drawer-layout/app-drawer-layout.html">
+	<link rel="import" href="components/app-layout/app-drawer/app-drawer.html">
+	<link rel="import" href="components/app-layout/app-header-layout/app-header-layout.html">
+	<link rel="import" href="components/app-layout/app-header/app-header.html">
+	<link rel="import" href="components/app-layout/app-toolbar/app-toolbar.html">
+	<link rel="import" href="components/iron-icons/iron-icons.html">
+	<link rel="import" href="components/iron-pages/iron-pages.html">
+	<link rel="import" href="components/paper-icon-button/paper-icon-button.html">
+	<link rel="import" href="components/paper-button/paper-button.html"/>
+	<link rel="import" href="components/paper-item/paper-item.html"/>
+	<link rel="import" href="components/paper-listbox/paper-listbox.html">
+	<link rel="import" href="components/paper-toast/paper-toast.html">
+
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+			background-color: #eee;
+		}
+	</style>
+
+</head>
+<body>
+
+<dom-module id="demo-layout">
+	<template>
+		<style>
+			app-drawer-layout:not([narrow]) [drawer-toggle] {
+				display: none;
+			}
+
+			/*
+			 * <paper-toast> is partially hidden by app-drawer
+			 * https://github.com/PolymerElements/paper-toast/issues/80
+			 *
+			 * paper-toast appears behind nav drawer.
+			 * https://github.com/PolymerElements/paper-toast/issues/14
+			 *
+			 * https://stackoverflow.com/questions/33598105/fill-page-with-iron-pages-element
+			 */
+			iron-pages {
+				height: 100%;
+			}
+			div {
+				height: 100%;
+			}
+
+			app-header {
+				background-color: #4285f4;
+				color: #fff;
+			}
+		</style>
+		<app-drawer-layout fullbleed>
+			<app-drawer slot="drawer">
+				<paper-listbox selected="{{selected}}">
+					<paper-item>fitInto</paper-item>
+					<paper-item>without fitInto</paper-item>
+					<paper-item>opened too early</paper-item>
+				</paper-listbox>
+			</app-drawer>
+			<app-header-layout fullbleed>
+				<app-header slot="header" fixed condenses>
+					<app-toolbar>
+						<paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+						<div main-title>paper toast issue 80</div>
+					</app-toolbar>
+				</app-header>
+				<iron-pages selected="{{selected}}">
+					<div>
+						<div id="container3">
+							<paper-button raised on-tap="demo3">Open toast</paper-button>
+						</div>
+						<paper-toast id="toast3" text="This toast fits into a container."></paper-toast>
+					</div>
+					<div>
+						<paper-button raised on-tap="demo0">Default toast</paper-button>
+						<paper-toast id="toast0" text="This toast auto-closes after 3 seconds"></paper-toast>
+					</div>
+					<div>
+						<div id="container1">
+							<span>Refresh the page, and come here immediately to see the problem - the container was
+								zero height and width.</span>
+							<paper-button raised on-tap="demo1">Toggle</paper-button>
+						</div>
+						<paper-toast id="toast1" duration="Infinite" opened
+									 text="This toast will stay opened until you close it, or open another toast.">
+						</paper-toast>
+					</div>
+				</iron-pages>
+			</app-header-layout>
+		</app-drawer-layout>
+	</template>
+	<script>
+		class DemoLayout extends Polymer.Element {
+			static get is() { return "demo-layout"; }
+
+			static get properties() {
+				return {
+					selected: {
+						type: Number,
+						value: 0,
+					},
+				};
+			}
+
+			connectedCallback() {
+				super.connectedCallback();
+
+				this.$.toast3.fitInto = this.$.container3;
+				this.$.toast1.fitInto = this.$.container1;
+			}
+
+			demo0() {
+				this.$.toast0.open();
+			}
+
+			demo3() {
+				this.$.toast3.open();
+			}
+
+			demo1() {
+				this.$.toast1.toggle();
+			}
+		}
+
+		window.customElements.define(DemoLayout.is, DemoLayout);
+	</script>
+</dom-module>
+<demo-layout></demo-layout>
+
+</body>
+</html>
