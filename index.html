@@ -53,7 +53,7 @@
 			iron-pages {
 				height: 100%;
 			}
-			div {
+			.page {
 				height: 100%;
 			}
 
@@ -62,12 +62,12 @@
 				color: #fff;
 			}
 		</style>
-		<app-drawer-layout fullbleed>
-			<app-drawer slot="drawer">
+		<app-drawer-layout fullbleed narrow="{{narrow}}">
+			<app-drawer slot="drawer" swipe-open="[[narrow]]">
 				<paper-listbox selected="{{selected}}">
-					<paper-item>fitInto</paper-item>
-					<paper-item>without fitInto</paper-item>
-					<paper-item>opened too early</paper-item>
+					<paper-item>demo1</paper-item>
+					<paper-item>demo2</paper-item>
+					<paper-item>demo3</paper-item>
 				</paper-listbox>
 			</app-drawer>
 			<app-header-layout fullbleed>
@@ -78,29 +78,19 @@
 					</app-toolbar>
 				</app-header>
 				<iron-pages selected="{{selected}}">
-					<div>
-						<div id="container3">
-							<paper-button raised on-tap="demo3">Open toast</paper-button>
-						</div>
-						<paper-toast id="toast3" text="This toast fits into a container."></paper-toast>
+					<div class="page">
+						<paper-button raised on-tap="demo1">Open toast</paper-button>
 					</div>
-					<div>
-						<paper-button raised on-tap="demo0">Default toast</paper-button>
-						<paper-toast id="toast0" text="This toast auto-closes after 3 seconds"></paper-toast>
+					<div class="page">
+						<paper-button raised on-tap="demo2">Open toast</paper-button>
 					</div>
-					<div>
-						<div id="container1">
-							<span>Refresh the page, and come here immediately to see the problem - the container was
-								zero height and width.</span>
-							<paper-button raised on-tap="demo1">Toggle</paper-button>
-						</div>
-						<paper-toast id="toast1" duration="Infinite" opened
-									 text="This toast will stay opened until you close it, or open another toast.">
-						</paper-toast>
+					<div class="page">
+						<paper-button raised on-tap="demo3">Open toast</paper-button>
 					</div>
 				</iron-pages>
 			</app-header-layout>
 		</app-drawer-layout>
+		<paper-toast id="toast"></paper-toast>
 	</template>
 	<script>
 		class DemoLayout extends Polymer.Element {
@@ -118,20 +108,36 @@
 			connectedCallback() {
 				super.connectedCallback();
 
-				this.$.toast3.fitInto = this.$.container3;
-				this.$.toast1.fitInto = this.$.container1;
-			}
-
-			demo0() {
-				this.$.toast0.open();
-			}
-
-			demo3() {
-				this.$.toast3.open();
+				var scope = this;
+				scope.addEventListener("toast", function (e) {
+					if (e.detail) {
+						scope.$.toast.text = e.detail.text;
+						scope.$.toast.open();
+					} else {
+						scope.$.toast.close();
+					}
+				});
 			}
 
 			demo1() {
-				this.$.toast1.toggle();
+				var message = "demo1";
+				this.dispatchEvent(new CustomEvent("toast", {
+					detail: { text: message },
+				}));
+			}
+
+			demo2() {
+				var message = "demo2";
+				this.dispatchEvent(new CustomEvent("toast", {
+					detail: { text: message },
+				}));
+			}
+
+			demo3() {
+				var message = "demo3";
+				this.dispatchEvent(new CustomEvent("toast", {
+					detail: { text: message },
+				}));
 			}
 		}
 
